@@ -30,32 +30,62 @@ func TestAlertmanagerConfigurationIsTransactional(t *testing.T) {
 	{
 		payload := `
 {
-	"template_files": {},
-	"alertmanager_config": {
-		"route": {
-			"receiver": "slack.receiver"
-		},
-		"templates": null,
-		"receivers": [{
-			"name": "slack.receiver",
-			"grafana_managed_receiver_configs": [{
-				"settings": {
-					"iconEmoji": "",
-					"iconUrl": "",
-					"mentionGroups": "",
-					"mentionUsers": "",
-					"recipient": "#unified-alerting-test",
-					"username": ""
-				},
-				"secureSettings": {},
-				"type": "slack",
-				"sendReminder": true,
-				"name": "slack.receiver",
-				"disableResolveMessage": false,
-				"uid": ""
-			}]
-		}]
-	}
+  "template_files": {},
+  "alertmanager_config": {
+    "route": {
+      "receiver": "webhook_test",
+      "group_by": [
+        "alertname"
+      ]
+    },
+    "templates": [],
+    "receivers": [
+      {
+        "name": "Kyle Email",
+        "grafana_managed_receiver_configs": [
+          {
+            "uid": "",
+            "name": "Kyle Email",
+            "type": "email",
+            "sendReminder": false,
+            "disableResolveMessage": true,
+            "frequency": "",
+            "isDefault": false,
+            "settings": {
+              "addresses": "kyle@grafana.com",
+              "singleEmail": false
+            },
+            "secureSettings": null,
+            "Result": null
+          }
+        ]
+      },
+      {
+        "name": "webhook_test",
+        "grafana_managed_receiver_configs": [
+          {
+            "uid": "",
+            "name": "webhook_test",
+            "type": "slack",
+            "sendReminder": false,
+            "disableResolveMessage": false,
+            "frequency": "",
+            "isDefault": false,
+            "settings": {
+              "recipient": "#unified-alerting-test",
+              "text": "  Kyle\n  {{ range .Alerts }} {{ .Labels.alertname }}: {{ .Annotations.description }}\n{{.Labels.__value__}}\n     {{ range $k, $v := .Labels }}{{ $k }}:{{ $v }}\n     {{ end }}\n  {{ end }}",
+              "username": "kyle"
+            },
+            "secureSettings": {
+              "token": "UEN2bWdqOWwXI13bvCw7gqhh8OwiwfNb",
+              "url": "Yll6ampqQ0sgxEEraCJHKV3jGDH1j8RV8iUU+iDd25olVe1x3lwBqNeFEu2Wkw=="
+            },
+            "Result": null
+          }
+        ]
+      }
+    ]
+  }
 }
 `
 		resp := postRequest(t, alertConfigURL, payload, http.StatusBadRequest) // nolint
