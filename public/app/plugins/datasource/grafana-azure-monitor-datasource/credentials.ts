@@ -263,3 +263,7 @@ export function updateLogAnalyticsSameAs(options: AzureDataSourceSettings, sameA
 
   return options;
 }
+
+export function isAppInsightsConfigured(options: AzureDataSourceSettings) {
+  return !!(options.jsonData.appInsightsAppId && options.secureJsonFields.appInsightsApiKey);
+}
